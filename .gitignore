@@ -1,0 +1,6 @@
+# Potential ignored files and folders
+Tests
+Binaries
+Executables
+Builds
+*.exe
