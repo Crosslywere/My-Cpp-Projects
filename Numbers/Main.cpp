@@ -31,7 +31,7 @@ Number data[NUMBERS] = {
     {18, "eighteen"}, {19, "nineteen"}, {20, "twenty"},
     {30, "thirty"}, {40, "fourty"}, {50, "fifty"},
     {60, "sixty"}, {70, "seventy"}, {80, "eighty"},
-    {90, "ninety"}, {100, "hundred"}
+    {90, "ninety"}, {100, "hundred"}, {1000, "thousand"};
 };
 
 bool isNum(std::string str)
