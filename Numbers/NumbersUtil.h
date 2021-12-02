@@ -7,6 +7,10 @@
  * Any extra data that you want to define can be added by using the loadExtraData fuction
  * after using the initData function.
  * 
+ * Key Words:
+ * Segment: this is a none repeatable part of a number eg thousand, million, etc
+ * 
+ * 
  */
 #pragma once
 #ifndef NUMBERS_UTIL_H
@@ -156,6 +160,10 @@ std::vector<Value> segment(Value value)
 
 Word genWord(Value value, NumberArray data = *numberData)
 {
+    if(value == 0)
+    {
+        return "zero";
+    }
     // If the number is greater than or equal to 1000 it has segments so it should be segmented
     if(value >= 1000)
     {
@@ -169,26 +177,33 @@ Word genWord(Value value, NumberArray data = *numberData)
         return words;
     }
     // When the smallest segment is passed and can be identified immediately ie numbers between 0 and 90
-    for(int i = 0; i < INIT_DATA_SIZE - 2; i++)
+    for(int i = 1; i < INIT_DATA_SIZE - 2; i++)
     {
         if(value == data[i].value)
             return data[i].word;
     }
     // Gets to this point if the number is not immediately identified
-    // Getting the hundred value and storing it in temp
-    short temp = value / 100;
-    value %= 100;
-    // If the temp holds a hundred value
-    if(temp > 0)
+    if(value > 0)
     {
-        // Returns the hundred value and concatonates the next value
-        return genWord(temp) + " hundred " + genWord(value);
+        // Getting the hundred value and storing it in temp
+        short temp = value / 100;
+        value %= 100;
+        // If the temp holds a hundred value
+        if(temp > 0)
+        {
+            // Returns the hundred value and concatonates the next value
+            return genWord(temp) + " hundred " + (value > 0 ? genWord(value) : ""); // The ternary operation prevents zero from coming at the end of the word
+        }
+        else // If the value doesn't have a hundred value
+        {
+            // Gets the unit
+            temp = value % 10;
+            return genWord(value - temp) + (temp == 0 ? "" : " " + genWord(temp));
+        }
     }
-    else // If the value doesn't have a hundred value
+    else
     {
-        // Gets the unit
-        temp = value % 10;
-        return genWord(value - temp) + (temp == 0 ? "" : " " + genWord(temp));
+        return "";
     }
     // If all else fails returns Unknown
     return "Unknown";
@@ -196,7 +211,45 @@ Word genWord(Value value, NumberArray data = *numberData)
 
 Value genValue(Word word, NumberArray data = *numberData)
 {
-    return 0;
+    std::stringstream words(word);
+    std::vector<Value> values;
+    values.emplace_back(0);
+    while(words.good())
+    {
+        Word temp;
+        words >> temp;
+        for(int i = 0; i < INIT_DATA_SIZE - 2; i++)
+        {
+            if(temp == data[i].word)
+            {
+                // result *= 10;
+                values.back() += data[i].value;
+                temp = "";
+                break;
+            }
+        }
+        if(temp == data[INIT_DATA_SIZE - 2].word)
+        {
+            values.back() *= 100;
+        }
+        for(int i = INIT_DATA_SIZE - 1; i < data.size(); i++)
+        {
+            if(temp.empty())
+                break;
+            if(temp == data[i].word)
+            {
+                values.back() *= data[i].value;
+                values.emplace_back(0);
+                break;
+            }
+        }
+    }
+    Value result = 0;
+    for(Value v : values)
+    {
+        result += v;
+    }
+    return result;
 }
 
 

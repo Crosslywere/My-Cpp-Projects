@@ -7,8 +7,8 @@ int main()
     NumberArray numData;
     initData(numData);
     Number input;
-    std::cout << "Enter a number between 0 and 99: ";
-    std::cin >> input.word;
+    std::cout << "Enter a number between 0 and 999,999 as a value or in words: ";
+    std::getline(std::cin, input.word);
     if(convToVal(input.word, input.value))
     {
         std::cout << input.value << " is " << genWord(input.value) << std::endl;
